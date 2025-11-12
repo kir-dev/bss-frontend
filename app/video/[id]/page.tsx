@@ -1,3 +1,4 @@
+import { VideoPlayer } from "@/components/video-player";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Share2, Download } from "lucide-react";
@@ -53,15 +54,11 @@ export default function VideoPage({ params }: VideoPageProps) {
       <div className="relative left-1/2 w-screen -translate-x-1/2 bg-black">
         <div className="mx-auto w-full max-w-6xl px-4 lg:px-6 ">
           <div className="relative aspect-video overflow-hidden shadow-2xl ring-1 ring-black/40">
-            <video
-              className="h-full w-full object-cover"
-              controls
+            <VideoPlayer
+              src={video.videoUrl}
               poster={video.thumbnailUrl}
-              preload="metadata"
-            >
-              <source src={video.videoUrl} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+              title={video.title}
+            />
           </div>
         </div>
       </div>
