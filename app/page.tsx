@@ -113,60 +113,46 @@ const partnerLogos = [
 
 export default function HomePage() {
   return (
-    <main className="flex min-h-screen flex-col container">
+    <main className="flex min-h-screen flex-col">
       <section className="bg-[url('/Pattern.svg')] bg-repeat py-12">
-        <div className="mx-auto flex w-full flex-col gap-10 px-6 lg:px-40">
+        <div className=" flex w-full flex-col gap-10 px-6 ">
           <div className="space-y-2">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-bss">
               Budavári Schönherz Stúdió
             </p>
-            <h1 className="text-3xl font-extrabold text-bss md:text-4xl">
-              Kiemelt videó / adás neve
-            </h1>
           </div>
 
-          <div className="grid gap-10 lg:grid-cols-[2fr_1fr] lg:items-stretch">
-            <Card className="overflow-hidden border-none shadow-lg">
-              <CardContent className="space-y-4 p-0">
-                <div className="relative aspect-video w-full bg-black">
-                  <VideoPlayer
-                    src={featuredVideo.videoUrl}
-                    poster={featuredVideo.thumbnail}
-                    title={featuredVideo.title}
-                  ></VideoPlayer>
-                </div>
-                <div className="space-y-2 px-6 pb-6">
-                  <p className="text-sm uppercase tracking-wide text-bss">
-                    {featuredVideo.category}
-                  </p>
-                  <h2 className="text-2xl font-semibold text-bss">
-                    {featuredVideo.title}
-                  </h2>
-                  <p className="text-sm text-muted-foreground">
-                    Nézd meg legfrissebb kiemelt adásunkat, amelyben betekintést
-                    adunk a stúdió kulisszái mögé.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+          <div className="grid gap-10 lg:grid-cols-[3fr_2fr] lg:items-start">
+            <div className="flex flex-col space-y-4">
+              {" "}
+              <h1 className="text-3xl font-extrabold inline text-bss md:text-4xl">
+                Kiemelt videó / adás neve
+              </h1>
+              <div className="space-y-4">
+                <VideoPlayer
+                  src={featuredVideo.videoUrl}
+                  poster={featuredVideo.thumbnail}
+                  title={featuredVideo.title}
+                  className="aspect-video w-full overflow-hidden shadow-lg shadow-black/30"
+                />
+              </div>
+            </div>
 
-            <div className="flex h-full flex-col gap-4 lg:min-h-0">
-              <h3 className="text-xl font-semibold text-bss-inv">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-semibold text-bss-inv">
                 További friss videóink
               </h3>
-              <div className="lg:flex-1 lg:min-h-0">
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:h-full lg:min-h-0 lg:grid-cols-2 lg:overflow-y-auto lg:pr-1">
-                  {latestVideos.map((video) => (
-                    <VideoCard
-                      key={video.id}
-                      id={video.id}
-                      title={video.title}
-                      thumbnailUrl={video.thumbnail}
-                      duration={video.duration}
-                      className="h-32 lg:h-auto"
-                    />
-                  ))}
-                </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {latestVideos.map((video) => (
+                  <VideoCard
+                    key={video.id}
+                    id={video.id}
+                    title={video.title}
+                    thumbnailUrl={video.thumbnail}
+                    duration={video.duration}
+                    className="border border-slate-200/80 bg-white shadow-lg hover:translate-y-0 lg:h-38 md:h-48 sm:h-64 h-70 xl:w-56 lg:w-48 md:w-64 hover:shadow-xl"
+                  />
+                ))}
               </div>
             </div>
           </div>

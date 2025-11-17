@@ -3,8 +3,8 @@
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 
-// Mock tags data organized by categories
-const tagsData = {
+// Mock members data organized by categories
+const membersData = {
   VEZETŐSÉG: Array.from({ length: 3 }, (_, i) => ({
     id: `lead-${i + 1}`,
     title: "Cute Seal",
@@ -25,7 +25,7 @@ const tagsData = {
   })),
 };
 
-export default function TagsPage() {
+export default function MembersPage() {
   const router = useRouter();
 
   return (
@@ -47,7 +47,7 @@ export default function TagsPage() {
         </div>
 
         {/* Categories */}
-        {Object.entries(tagsData).map(([category, members]) => (
+        {Object.entries(membersData).map(([category, members]) => (
           <div key={category} className="mb-12">
             <h2 className="text-xl font-bold text-bss text-center mb-6">
               {category}
@@ -58,7 +58,7 @@ export default function TagsPage() {
                 <Card
                   key={member.id}
                   onClick={() => router.push(`/profile/${member.id}`)}
-                  className="group cursor-pointer hover:shadow-lg transition-shadow py-0 w-36 sm:w-40 md:w-44 max-w-[240px]"
+                  className="group cursor-pointer hover:shadow-lg transition-shadow py-0 w-36 sm:w-40 md:w-44 max-w-60"
                 >
                   <CardContent className="p-0">
                     <div className="relative aspect-square">

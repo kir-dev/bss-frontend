@@ -35,9 +35,9 @@ const NAV_ITEMS: NavItem[] = [
     matchPaths: ["/events"],
   },
   {
-    href: "/tags",
+    href: "/members",
     label: "Tagok",
-    matchPaths: ["/tags"],
+    matchPaths: ["/members"],
   },
   {
     href: "/courses",
