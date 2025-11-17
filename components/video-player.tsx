@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   type KeyboardEvent,
@@ -7,7 +7,14 @@ import {
   useRef,
   useState,
 } from "react";
-import { Pause, Play, Volume2, VolumeX } from "lucide-react";
+import {
+  Maximize2,
+  Minimize2,
+  Pause,
+  Play,
+  Volume2,
+  VolumeX,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -39,6 +46,18 @@ const formatTime = (time: number) => {
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 };
 
+const getVideoDuration = (video: HTMLVideoElement) => {
+  if (Number.isFinite(video.duration) && video.duration > 0) {
+    return video.duration;
+  }
+
+  if (video.seekable.length > 0) {
+    return video.seekable.end(video.seekable.length - 1);
+  }
+
+  return 0;
+};
+
 export function VideoPlayer({
   src,
   poster,
@@ -47,6 +66,7 @@ export function VideoPlayer({
   preload = "metadata",
   autoPlay = false,
 }: VideoPlayerProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const isScrubbingRef = useRef(false);
 
@@ -57,8 +77,10 @@ export function VideoPlayer({
   const [volume, setVolume] = useState(1);
   const [isScrubbing, setIsScrubbing] = useState(false);
   const [scrubTime, setScrubTime] = useState<number | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
-  const displayedTime = isScrubbing && scrubTime !== null ? scrubTime : currentTime;
+  const displayedTime =
+    isScrubbing && scrubTime !== null ? scrubTime : currentTime;
   const progressPercent = duration > 0 ? (displayedTime / duration) * 100 : 0;
 
   useEffect(() => {
@@ -67,8 +89,12 @@ export function VideoPlayer({
       return;
     }
 
+    const updateDuration = () => {
+      setDuration(getVideoDuration(video));
+    };
+
     const handleLoadedMetadata = () => {
-      setDuration(video.duration || 0);
+      updateDuration();
       setIsMuted(video.muted || video.volume === 0);
       setVolume(video.volume ?? 1);
 
@@ -93,6 +119,9 @@ export function VideoPlayer({
       setIsMuted(video.muted || video.volume === 0);
       setVolume(video.volume);
     };
+    const handleDurationChange = () => {
+      updateDuration();
+    };
 
     video.addEventListener("loadedmetadata", handleLoadedMetadata);
     video.addEventListener("timeupdate", handleTimeUpdate);
@@ -100,6 +129,11 @@ export function VideoPlayer({
     video.addEventListener("pause", handlePause);
     video.addEventListener("ended", handleEnded);
     video.addEventListener("volumechange", handleVolumeChange);
+    video.addEventListener("durationchange", handleDurationChange);
+
+    updateDuration();
+    setIsMuted(video.muted || video.volume === 0);
+    setVolume(video.volume ?? 1);
 
     return () => {
       video.removeEventListener("loadedmetadata", handleLoadedMetadata);
@@ -108,12 +142,27 @@ export function VideoPlayer({
       video.removeEventListener("pause", handlePause);
       video.removeEventListener("ended", handleEnded);
       video.removeEventListener("volumechange", handleVolumeChange);
+      video.removeEventListener("durationchange", handleDurationChange);
     };
-  }, [autoPlay]);
+  }, [autoPlay, src]);
 
   useEffect(() => {
     isScrubbingRef.current = isScrubbing;
   }, [isScrubbing]);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const container = containerRef.current;
+      setIsFullscreen(
+        Boolean(container && document.fullscreenElement === container)
+      );
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
 
   const togglePlay = useCallback(() => {
     const video = videoRef.current;
@@ -151,6 +200,23 @@ export function VideoPlayer({
     setIsMuted(video.muted);
   }, []);
 
+  const toggleFullscreen = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) {
+      return;
+    }
+
+    if (document.fullscreenElement === container) {
+      void document.exitFullscreen?.();
+      return;
+    }
+
+    const request = container.requestFullscreen?.();
+    if (request && typeof request.catch === "function") {
+      request.catch(() => {});
+    }
+  }, []);
+
   const handleScrubStart = useCallback(() => {
     setIsScrubbing(true);
     isScrubbingRef.current = true;
@@ -158,8 +224,7 @@ export function VideoPlayer({
 
   const handleScrubMove = useCallback(
     (value: number) => {
-      const clamped =
-        duration > 0 ? Math.min(Math.max(value, 0), duration) : 0;
+      const clamped = duration > 0 ? Math.min(Math.max(value, 0), duration) : 0;
       setScrubTime(clamped);
     },
     [duration]
@@ -172,8 +237,7 @@ export function VideoPlayer({
         return;
       }
 
-      const clamped =
-        duration > 0 ? Math.min(Math.max(value, 0), duration) : 0;
+      const clamped = duration > 0 ? Math.min(Math.max(value, 0), duration) : 0;
       video.currentTime = clamped;
       setCurrentTime(clamped);
       setScrubTime(null);
@@ -219,6 +283,7 @@ export function VideoPlayer({
 
   return (
     <div
+      ref={containerRef}
       className={cn(
         "group/video-player relative flex h-full w-full select-none items-center justify-center bg-black focus:outline-none",
         className
@@ -248,16 +313,24 @@ export function VideoPlayer({
         <span
           className={cn(
             "rounded-full bg-black/50 p-4 backdrop-blur-sm transition-opacity duration-200",
-            isPlaying ? "opacity-0 group-hover/video-player:opacity-100" : "opacity-100"
+            isPlaying
+              ? "opacity-0 group-hover/video-player:opacity-100"
+              : "opacity-100"
           )}
         >
-          {isPlaying ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8" />}
+          {isPlaying ? (
+            <Pause className="h-8 w-8" />
+          ) : (
+            <Play className="h-8 w-8" />
+          )}
         </span>
       </button>
 
-      <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 text-white">
+      <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 bg-linear-to-t from-black/80 via-black/40 to-transparent p-4 text-white">
         {title ? (
-          <div className="truncate text-sm font-medium text-white/85">{title}</div>
+          <div className="truncate text-sm font-medium text-white/85">
+            {title}
+          </div>
         ) : null}
 
         <div className="flex items-center gap-3">
@@ -267,7 +340,11 @@ export function VideoPlayer({
             className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bss"
             aria-label={isPlaying ? "Pause video" : "Play video"}
           >
-            {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+            {isPlaying ? (
+              <Pause className="h-5 w-5" />
+            ) : (
+              <Play className="h-5 w-5" />
+            )}
           </button>
 
           <div className="relative flex h-9 flex-1 items-center">
@@ -286,7 +363,9 @@ export function VideoPlayer({
               min={0}
               max={duration || 0}
               step={0.05}
-              value={isScrubbing && scrubTime !== null ? scrubTime : currentTime}
+              value={
+                isScrubbing && scrubTime !== null ? scrubTime : currentTime
+              }
               onPointerDown={handleScrubStart}
               onPointerUp={(event) => {
                 const value = Number((event.target as HTMLInputElement).value);
@@ -310,7 +389,7 @@ export function VideoPlayer({
             />
           </div>
 
-          <div className="flex min-w-[96px] items-center justify-end text-xs font-medium tabular-nums text-white/85">
+          <div className="flex min-w-24 items-center justify-end text-xs font-medium tabular-nums text-white/85">
             {formatTime(displayedTime)} / {formatTime(duration)}
           </div>
 
@@ -341,7 +420,9 @@ export function VideoPlayer({
                 value={volume}
                 className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 onPointerUp={(event) => {
-                  handleVolumeChange(Number((event.target as HTMLInputElement).value));
+                  handleVolumeChange(
+                    Number((event.target as HTMLInputElement).value)
+                  );
                 }}
                 onChange={(event) => {
                   const value = Number(event.target.value);
@@ -350,6 +431,19 @@ export function VideoPlayer({
               />
             </div>
           </div>
+
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bss"
+            aria-label={isFullscreen ? "Exit full screen" : "Enter full screen"}
+          >
+            {isFullscreen ? (
+              <Minimize2 className="h-5 w-5" />
+            ) : (
+              <Maximize2 className="h-5 w-5" />
+            )}
+          </button>
         </div>
       </div>
     </div>

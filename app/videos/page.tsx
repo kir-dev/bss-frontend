@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { VideoCard } from "@/components/video-card";
 import PlayFilled from "@/components/icons/play-filled";
+import Link from "next/link";
 
 // Mock video data
 const generateMockVideos = (count: number) => {
@@ -135,38 +136,42 @@ export default function VideosPage() {
         {/* Featured Video Section */}
         <div className="grid lg:grid-cols-3 gap-8 mb-12">
           <div className="lg:col-span-2">
-            <Card className="overflow-hidden">
-              <CardContent className="p-0">
-                <div className="relative aspect-video bg-black">
-                  <img
-                    src={featuredVideo.thumbnailUrl || "/placeholder.svg"}
-                    alt={featuredVideo.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                    <Button size="lg" className="rounded-full w-16 h-16">
-                      <PlayFilled className="w-6 h-6 ml-1" />
-                    </Button>
+            <Link href={`/video/${featuredVideo.id}`}>
+              <Card className="overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="relative aspect-video bg-black">
+                    <img
+                      src={featuredVideo.thumbnailUrl || "/placeholder.svg"}
+                      alt={featuredVideo.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                      <Button size="lg" className="rounded-full w-16 h-16">
+                        <PlayFilled className="w-6 h-6 ml-1" />
+                      </Button>
+                    </div>
                   </div>
-                </div>
-                <div className="p-4">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-bold">{featuredVideo.title}</h2>
-                    <Button
-                      variant="outline"
-                      className="rounded-full"
-                      size="sm"
-                    >
-                      Legfrissebb!
-                    </Button>
+                  <div className="p-4">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-bold">
+                        {featuredVideo.title}
+                      </h2>
+                      <Button
+                        variant="outline"
+                        className="rounded-full"
+                        size="sm"
+                      >
+                        Legfrissebb!
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </Link>
           </div>
 
           {/* Sidebar with recent videos */}
-          <div className="space-y-4 flex flex-col">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {allVideos.slice(0, 6).map((video) => (
               <VideoCard
                 key={video.id}
@@ -174,7 +179,6 @@ export default function VideosPage() {
                 title={video.title}
                 thumbnailUrl={video.thumbnailUrl}
                 duration={video.duration}
-                className="h-14"
               />
             ))}
           </div>
@@ -202,7 +206,7 @@ export default function VideosPage() {
               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
               disabled={currentPage === 1}
             >
-              ‹
+              {"‹"}
             </Button>
 
             {generatePageNumbers().map((page, index) => (
@@ -214,7 +218,7 @@ export default function VideosPage() {
                     variant={currentPage === page ? "default" : "outline"}
                     size="sm"
                     onClick={() => setCurrentPage(page as number)}
-                    className="min-w-[40px]"
+                    className="min-w-10"
                   >
                     {page}
                   </Button>
@@ -230,7 +234,7 @@ export default function VideosPage() {
               }
               disabled={currentPage === totalPages}
             >
-              ›
+              {"›"}
             </Button>
           </div>
         )}

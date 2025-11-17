@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { VideoCard } from "@/components/video-card";
+import { VideoPlayer } from "@/components/video-player";
 
 type Video = {
   id: string;
@@ -15,6 +16,7 @@ type Video = {
   thumbnail: string;
   duration: string;
   category: string;
+  videoUrl: string;
 };
 
 type EventCard = {
@@ -38,6 +40,8 @@ const featuredVideo: Video = {
   thumbnail: "/video-thumbnail.jpg",
   duration: "03:10",
   category: "Élő közvetítés",
+  videoUrl:
+    "https://v.bsstudio.hu/bss_vagott_web_16a9_HD/high_quality/20250605_vik75_hq_HD.mp4",
 };
 
 const latestVideos: Video[] = Array.from({ length: 6 }, (_, index) => ({
@@ -46,6 +50,8 @@ const latestVideos: Video[] = Array.from({ length: 6 }, (_, index) => ({
   thumbnail: "/video-thumbnail.jpg",
   duration: "02:45",
   category: "Friss videó",
+  videoUrl:
+    "https://v.bsstudio.hu/bss_vagott_web_16a9_HD/high_quality/20250605_vik75_hq_HD.mp4",
 }));
 
 const recentEvents: EventCard[] = Array.from({ length: 50 }, (_, index) => ({
@@ -107,7 +113,7 @@ const partnerLogos = [
 
 export default function HomePage() {
   return (
-    <main className="flex min-h-screen flex-col bg-white">
+    <main className="flex min-h-screen flex-col container">
       <section className="bg-[url('/Pattern.svg')] bg-repeat py-12">
         <div className="mx-auto flex w-full flex-col gap-10 px-6 lg:px-40">
           <div className="space-y-2">
@@ -120,20 +126,14 @@ export default function HomePage() {
           </div>
 
           <div className="grid gap-10 lg:grid-cols-[2fr_1fr] lg:items-stretch">
-            <Card className="overflow-hidden border-none bg-white/95 shadow-lg">
+            <Card className="overflow-hidden border-none shadow-lg">
               <CardContent className="space-y-4 p-0">
                 <div className="relative aspect-video w-full bg-black">
-                  <video
-                    controls
+                  <VideoPlayer
+                    src={featuredVideo.videoUrl}
                     poster={featuredVideo.thumbnail}
-                    className="h-full w-full object-cover"
-                  >
-                    <source
-                      src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
-                      type="video/mp4"
-                    />
-                    Your browser does not support the video tag.
-                  </video>
+                    title={featuredVideo.title}
+                  ></VideoPlayer>
                 </div>
                 <div className="space-y-2 px-6 pb-6">
                   <p className="text-sm uppercase tracking-wide text-bss">
@@ -199,7 +199,7 @@ export default function HomePage() {
             {infoSections.map((info) => (
               <Card
                 key={info.id}
-                className="border-none bg-white/95 shadow-md transition hover:-translate-y-1 hover:shadow-lg"
+                className="border-none  shadow-md transition hover:-translate-y-1 hover:shadow-lg"
               >
                 <CardHeader className="space-y-1">
                   <CardTitle className="text-xl font-semibold text-bss">

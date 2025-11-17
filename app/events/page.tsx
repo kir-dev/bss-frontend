@@ -25,7 +25,7 @@ export default function EventsPage() {
                   <img
                     src={event.thumbnail || "/placeholder.svg"}
                     alt={event.title}
-                    className="w-full h-full object-cover rounded-t-lg"
+                    className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="p-3">

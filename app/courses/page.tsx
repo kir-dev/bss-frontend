@@ -50,7 +50,7 @@ export default function TanfolyamokPage() {
     <div className=" min-h-screen">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
-          <h1 className="text-6xl font-bold text-bss text-left mb-8">
+          <h1 className="text-4xl md:text-6xl font-bold text-bss text-left mb-8">
             Tanfolyamok
           </h1>
 
@@ -202,7 +202,7 @@ export default function TanfolyamokPage() {
                   className="w-full bg-bss hover:bg-blue-700 text-white flex items-center"
                 >
                   <span className="flex-1 text-center ml-8">Elküldés</span>
-                  <span className="flex-shrink-0">
+                  <span className="shrink-0">
                     <SendHorizontal />
                   </span>
                 </Button>
