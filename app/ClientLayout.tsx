@@ -10,7 +10,8 @@ import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import PatternBackground from "@/public/Pattern.svg"
 import { useSearchParams } from "next/navigation"
-import { Suspense } from "react"
+import { Suspense, useState } from "react"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import "./globals.css"
 
 export default function ClientLayout({
@@ -22,30 +23,33 @@ export default function ClientLayout({
   const patternBackgroundModule = PatternBackground as { src?: string }
   const patternBackgroundUrl =
     typeof PatternBackground === "string" ? PatternBackground : patternBackgroundModule.src ?? "/Pattern.svg"
+  const [queryClient] = useState(() => new QueryClient())
 
   return (
     <html lang="hu" suppressHydrationWarning>
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-          <div className="min-h-screen flex flex-col">
-            <Suspense fallback={<div>Loading...</div>}>
-              <Navigation />
-              <main
-                className="flex-1"
-                style={{
-                  backgroundImage: `url(${patternBackgroundUrl})`,
-                  backgroundRepeat: "no-repeat",
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                  backgroundColor: "var(--color-background)",
-                }}
-              >
-                {children}
-              </main>
-              <Footer />
-            </Suspense>
-          </div>
-        </ThemeProvider>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+            <div className="min-h-screen flex flex-col">
+              <Suspense fallback={<div>Loading...</div>}>
+                <Navigation />
+                <main
+                  className="flex-1"
+                  style={{
+                    backgroundImage: `url(${patternBackgroundUrl})`,
+                    backgroundRepeat: "no-repeat",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundColor: "var(--color-background)",
+                  }}
+                >
+                  {children}
+                </main>
+                <Footer />
+              </Suspense>
+            </div>
+          </ThemeProvider>
+        </QueryClientProvider>
         <Analytics />
       </body>
     </html>

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "dev": "next dev",
+    "dev": "next dev -p 3001",
     "lint": "next lint",
     "start": "next start"
   },
@@ -39,8 +39,10 @@
     "@radix-ui/react-tooltip": "1.1.6",
     "@remix-run/react": "latest",
     "@sveltejs/kit": "latest",
+    "@t3-oss/env-nextjs": "^0.13.8",
     "@vercel/analytics": "latest",
     "autoprefixer": "^10.4.21",
+    "@tanstack/react-query": "^5.64.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "1.0.4",
